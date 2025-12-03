@@ -1,0 +1,31 @@
+.login-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 40px;
+  margin-top: 40px;
+}
+
+.logo-container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: var(--ion-color-primary);
+}
+
+.logo-container p {
+  color: var(--ion-color-medium);
+  font-size: 1rem;
+}
+
+ion-item {
+  margin-bottom: 15px;
+}
+
+ion-button {
+  margin-top: 20px;
+}
+

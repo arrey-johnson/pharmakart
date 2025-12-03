@@ -5,9 +5,16 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
-  // Enable CORS for frontend
+  // Enable CORS for frontend and mobile app
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    origin: [
+      'http://localhost:3000',        // Next.js web app
+      'http://127.0.0.1:3000',        // Next.js web app
+      'http://localhost:5173',        // Ionic dev server
+      'http://192.168.1.251:5173',    // Ionic dev server (network)
+      'capacitor://localhost',        // Ionic mobile app (iOS)
+      'http://localhost',             // Ionic mobile app (Android)
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,
   });
