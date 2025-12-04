@@ -1,41 +1,87 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+# Testing
+coverage/
+.nyc_output
 
-# testing
-/coverage
+# Production
+build/
+dist/
+out/
 
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
+# Misc
 .DS_Store
 *.pem
-
-# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# Local env files
+.env
+.env*.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# vercel
-.vercel
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# OS
+Thumbs.db
+Desktop.ini
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Backend specific
+backend/.env
+backend/dist/
+backend/node_modules/
+
+# Frontend specific
+.next/
+src/.next/
+src/node_modules/
+
+# Mobile Ionic specific
+mobile-ionic/node_modules/
+mobile-ionic/dist/
+mobile-ionic/build/
+mobile-ionic/.ionic/
+mobile-ionic/www/
+mobile-ionic/platforms/
+mobile-ionic/plugins/
+mobile-ionic/android/app/build/
+mobile-ionic/android/build/
+mobile-ionic/android/.gradle/
+mobile-ionic/ios/App/build/
+mobile-ionic/ios/App/Pods/
+
+# Capacitor
+mobile-ionic/android/app/src/main/assets/public/
+mobile-ionic/ios/App/public/
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Temporary files
+*.tmp
+temp/
+tmp/
