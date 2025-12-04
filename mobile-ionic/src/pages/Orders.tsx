@@ -20,9 +20,11 @@ import {
   IonRefresher,
   IonRefresherContent,
 } from '@ionic/react';
+import { notificationsOutline, personOutline, cartOutline } from 'ionicons/icons';
 import { useState, useEffect } from 'react';
 import orderService, { Order } from '../services/order.service';
 import { RefresherEventDetail } from '@ionic/core';
+import { formatPrice } from '../config/constants';
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   PENDING: { label: 'Pending', color: 'warning' },
@@ -69,11 +71,15 @@ const Orders: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar color="primary">
-          <IonButtons slot="start">
-            <IonBackButton defaultHref="/home" />
+        <IonToolbar style={{ '--background': 'white' }}>
+          <IonButtons slot="end">
+            <IonButton routerLink="/app/cart">
+              <IonIcon slot="icon-only" icon={cartOutline} style={{ color: '#008C8C', fontSize: '24px' }} />
+            </IonButton>
+            <IonButton>
+              <IonIcon slot="icon-only" icon={notificationsOutline} style={{ color: '#008C8C', fontSize: '24px' }} />
+            </IonButton>
           </IonButtons>
-          <IonTitle>My Orders</IonTitle>
         </IonToolbar>
       </IonHeader>
 
@@ -116,8 +122,8 @@ const Orders: React.FC = () => {
                     {formatDate(order.createdAt)}
                   </p>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#008C8C' }}>
-                      ${order.total_amount.toFixed(2)}
+                    <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#008C8C' }}>
+                      {formatPrice(order.total_amount)}
                     </span>
                     <IonButton 
                       size="small" 

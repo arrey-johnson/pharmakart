@@ -9,9 +9,11 @@ import {
   IonItem,
   IonLabel,
   IonText,
+  IonIcon,
   IonLoading,
   useIonToast,
 } from '@ionic/react';
+import { eyeOutline, eyeOffOutline } from 'ionicons/icons';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import authService from '../services/auth.service';
@@ -20,6 +22,7 @@ import './Login.css';
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [present] = useIonToast();
   const history = useHistory();
@@ -46,24 +49,29 @@ const Login: React.FC = () => {
         color: 'success',
       });
 
-      // Navigate based on user role
+      // Navigate based on user role with page reload to update auth state
       const role = response.user.role;
+      let targetRoute = '/app/home';
+      
       switch (role) {
         case 'CLIENT':
-          history.push('/home');
+          targetRoute = '/app/home';
           break;
         case 'PHARMACY':
-          history.push('/pharmacy-dashboard');
+          targetRoute = '/pharmacy/dashboard';
           break;
         case 'RIDER':
-          history.push('/rider-dashboard');
+          targetRoute = '/rider/dashboard';
           break;
         case 'ADMIN':
-          history.push('/admin-dashboard');
+          targetRoute = '/admin/dashboard';
           break;
         default:
-          history.push('/home');
+          targetRoute = '/app/home';
       }
+      
+      // Force page reload to update authentication state
+      window.location.href = targetRoute;
     } catch (error: any) {
       present({
         message: error.response?.data?.message || 'Login failed. Please check your credentials.',
@@ -77,19 +85,14 @@ const Login: React.FC = () => {
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar color="primary">
-          <IonTitle>PharmaKart - Login</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent className="ion-padding" style={{ '--background': '#f8fafa' }}>
-        <div className="login-container" style={{ maxWidth: '440px', margin: '0 auto', paddingTop: '40px' }}>
+      <IonContent className="ion-padding" style={{ '--background': '#f8fafa', '--padding-top': 'env(safe-area-inset-top)', '--padding-bottom': 'env(safe-area-inset-bottom)' }}>
+        <div className="login-container" style={{ maxWidth: '440px', margin: '0 auto', paddingTop: 'max(60px, calc(env(safe-area-inset-top) + 40px))' }}>
           {/* Header - Matching Web App */}
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
             <img 
-              src="/assets/pk-brand-icon-colored.svg" 
+              src="/assets/pk-secondary-brand-logo-colored.svg" 
               alt="PharmaKart Logo" 
-              style={{ width: '80px', height: '80px', margin: '0 auto 16px' }}
+              style={{ width: '220px', height: 'auto', margin: '0 auto 24px' }}
             />
             <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '8px', color: '#222428' }}>
               Welcome back
@@ -139,22 +142,43 @@ const Login: React.FC = () => {
                     Forgot password?
                   </a>
                 </div>
-                <IonInput
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onIonChange={(e) => setPassword(e.detail.value!)}
-                  required
-                  disabled={loading}
-                  style={{ 
-                    '--background': '#ffffff',
-                    '--border-color': '#e5e7eb',
-                    '--border-width': '1px',
-                    '--border-radius': '8px',
-                    '--padding-start': '12px',
-                    '--padding-end': '12px'
-                  }}
-                />
+                <div style={{ position: 'relative' }}>
+                  <IonInput
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Enter your password"
+                    value={password}
+                    onIonChange={(e) => setPassword(e.detail.value!)}
+                    required
+                    disabled={loading}
+                    style={{ 
+                      '--background': '#ffffff',
+                      '--border-color': '#e5e7eb',
+                      '--border-width': '1px',
+                      '--border-radius': '8px',
+                      '--padding-start': '12px',
+                      '--padding-end': '42px'
+                    }}
+                  />
+                  <IonButton
+                    fill="clear"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '0',
+                      top: '0',
+                      height: '100%',
+                      margin: 0,
+                      '--padding-start': '8px',
+                      '--padding-end': '8px'
+                    }}
+                  >
+                    <IonIcon 
+                      slot="icon-only" 
+                      icon={showPassword ? eyeOffOutline : eyeOutline} 
+                      style={{ color: '#666' }}
+                    />
+                  </IonButton>
+                </div>
               </div>
 
               <IonButton 

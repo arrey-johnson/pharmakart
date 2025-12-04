@@ -17,12 +17,13 @@ import {
   IonCard,
   IonCardContent,
 } from '@ionic/react';
-import { trashOutline, addOutline, removeOutline, cartOutline } from 'ionicons/icons';
+import { trashOutline, addOutline, removeOutline, cartOutline, notificationsOutline, personOutline } from 'ionicons/icons';
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import cartService, { CartItem } from '../services/cart.service';
 import orderService from '../services/order.service';
 import authService from '../services/auth.service';
+import { formatPrice } from '../config/constants';
 
 const Cart: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -144,11 +145,12 @@ const Cart: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar color="primary">
-          <IonButtons slot="start">
-            <IonBackButton defaultHref="/home" />
+        <IonToolbar style={{ '--background': 'white' }}>
+          <IonButtons slot="end">
+            <IonButton>
+              <IonIcon slot="icon-only" icon={notificationsOutline} style={{ color: '#008C8C', fontSize: '24px' }} />
+            </IonButton>
           </IonButtons>
-          <IonTitle>Shopping Cart</IonTitle>
         </IonToolbar>
       </IonHeader>
 
@@ -176,8 +178,8 @@ const Cart: React.FC = () => {
                       <div style={{ flex: 1 }}>
                         <h3 style={{ fontWeight: 'bold', marginBottom: '4px' }}>{item.medicine_name}</h3>
                         <IonNote>{item.pharmacy_name}</IonNote>
-                        <p style={{ fontSize: '18px', fontWeight: 'bold', color: '#008C8C', marginTop: '8px' }}>
-                          ${item.price} × {item.quantity}
+                        <p style={{ fontSize: '16px', fontWeight: 'bold', color: '#008C8C', marginTop: '8px' }}>
+                          {formatPrice(item.price)} × {item.quantity}
                         </p>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -217,8 +219,8 @@ const Cart: React.FC = () => {
             <div style={{ padding: '16px', position: 'sticky', bottom: 0, background: 'white', borderTop: '1px solid #e5e7eb' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
                 <span style={{ fontSize: '18px', fontWeight: 'bold' }}>Total</span>
-                <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#008C8C' }}>
-                  ${totalAmount.toFixed(2)}
+                <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#008C8C' }}>
+                  {formatPrice(totalAmount)}
                 </span>
               </div>
               <IonButton

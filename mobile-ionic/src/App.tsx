@@ -2,15 +2,12 @@ import { Redirect, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { useEffect, useState } from 'react';
-import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Medicines from './pages/Medicines';
-import Cart from './pages/Cart';
-import Orders from './pages/Orders';
-import PharmacyDashboard from './pages/PharmacyDashboard';
-import RiderDashboard from './pages/RiderDashboard';
-import AdminDashboard from './pages/AdminDashboard';
+import CustomerTabs from './components/CustomerTabs';
+import PharmacyTabs from './components/PharmacyTabs';
+import RiderTabs from './components/RiderTabs';
+import AdminTabs from './components/AdminTabs';
 import authService from './services/auth.service';
 
 /* Core CSS required for Ionic components to work properly */
@@ -47,12 +44,15 @@ setupIonicReact();
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = () => {
       const authenticated = authService.isAuthenticated();
+      const user = authService.getCurrentUser();
       setIsAuthenticated(authenticated);
+      setUserRole(user?.role || null);
       setLoading(false);
     };
     checkAuth();
@@ -66,46 +66,84 @@ const App: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          {/* Auth Routes */}
-          <Route exact path="/login">
-            <Login />
-          </Route>
-          <Route exact path="/register">
-            <Register />
+          {/* Auth Routes - No tabs */}
+          <Route exact path="/login" component={Login} />
+          <Route exact path="/register" component={Register} />
+          
+          {/* Customer App with Bottom Tabs */}
+          <Route path="/app">
+            {isAuthenticated && userRole === 'CLIENT' ? (
+              <CustomerTabs />
+            ) : (
+              <Redirect to="/login" />
+            )}
           </Route>
           
-          {/* Customer Routes */}
+          {/* Pharmacy App with Bottom Tabs */}
+          <Route path="/pharmacy">
+            {isAuthenticated && userRole === 'PHARMACY' ? (
+              <PharmacyTabs />
+            ) : (
+              <Redirect to="/login" />
+            )}
+          </Route>
+          
+          {/* Rider App with Bottom Tabs */}
+          <Route path="/rider">
+            {isAuthenticated && userRole === 'RIDER' ? (
+              <RiderTabs />
+            ) : (
+              <Redirect to="/login" />
+            )}
+          </Route>
+          
+          {/* Admin App with Bottom Tabs */}
+          <Route path="/admin">
+            {isAuthenticated && userRole === 'ADMIN' ? (
+              <AdminTabs />
+            ) : (
+              <Redirect to="/login" />
+            )}
+          </Route>
+          
+          {/* Legacy route redirects for backward compatibility */}
           <Route exact path="/home">
-            {isAuthenticated ? <Home /> : <Redirect to="/login" />}
+            <Redirect to="/app/home" />
           </Route>
           <Route exact path="/medicines">
-            {isAuthenticated ? <Medicines /> : <Redirect to="/login" />}
+            <Redirect to="/app/medicines" />
           </Route>
           <Route exact path="/cart">
-            {isAuthenticated ? <Cart /> : <Redirect to="/login" />}
+            <Redirect to="/app/cart" />
           </Route>
           <Route exact path="/orders">
-            {isAuthenticated ? <Orders /> : <Redirect to="/login" />}
+            <Redirect to="/app/orders" />
           </Route>
-          
-          {/* Pharmacy Routes */}
           <Route exact path="/pharmacy-dashboard">
-            {isAuthenticated ? <PharmacyDashboard /> : <Redirect to="/login" />}
+            <Redirect to="/pharmacy/dashboard" />
           </Route>
-          
-          {/* Rider Routes */}
           <Route exact path="/rider-dashboard">
-            {isAuthenticated ? <RiderDashboard /> : <Redirect to="/login" />}
+            <Redirect to="/rider/dashboard" />
           </Route>
-          
-          {/* Admin Routes */}
           <Route exact path="/admin-dashboard">
-            {isAuthenticated ? <AdminDashboard /> : <Redirect to="/login" />}
+            <Redirect to="/admin/dashboard" />
           </Route>
           
-          {/* Default Route */}
+          {/* Default Route - Role-based redirect */}
           <Route exact path="/">
-            <Redirect to={isAuthenticated ? "/home" : "/login"} />
+            {!isAuthenticated ? (
+              <Redirect to="/login" />
+            ) : userRole === 'CLIENT' ? (
+              <Redirect to="/app/home" />
+            ) : userRole === 'PHARMACY' ? (
+              <Redirect to="/pharmacy/dashboard" />
+            ) : userRole === 'RIDER' ? (
+              <Redirect to="/rider/dashboard" />
+            ) : userRole === 'ADMIN' ? (
+              <Redirect to="/admin/dashboard" />
+            ) : (
+              <Redirect to="/login" />
+            )}
           </Route>
         </IonRouterOutlet>
       </IonReactRouter>

@@ -9,9 +9,11 @@ import {
   IonLabel,
   IonSelect,
   IonSelectOption,
+  IonIcon,
   IonLoading,
   useIonToast,
 } from '@ionic/react';
+import { eyeOutline, eyeOffOutline } from 'ionicons/icons';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import authService from '../services/auth.service';
@@ -24,6 +26,8 @@ const Register: React.FC = () => {
     confirmPassword: '',
     role: 'CLIENT' as 'CLIENT' | 'PHARMACY' | 'RIDER',
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [present] = useIonToast();
   const history = useHistory();
@@ -78,19 +82,14 @@ const Register: React.FC = () => {
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar color="primary">
-          <IonTitle>Register - PharmaKart</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent style={{ '--background': '#f8fafa' }}>
-        <div style={{ maxWidth: '440px', margin: '0 auto', paddingTop: '40px', padding: '20px' }}>
+      <IonContent style={{ '--background': '#f8fafa', '--padding-top': 'env(safe-area-inset-top)', '--padding-bottom': 'env(safe-area-inset-bottom)' }}>
+        <div style={{ maxWidth: '440px', margin: '0 auto', padding: '20px', paddingTop: 'max(60px, calc(env(safe-area-inset-top) + 40px))' }}>
           {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
             <img 
-              src="/assets/pk-brand-icon-colored.svg" 
+              src="/assets/pk-secondary-brand-logo-colored.svg" 
               alt="PharmaKart Logo" 
-              style={{ width: '80px', height: '80px', margin: '0 auto 16px' }}
+              style={{ width: '220px', height: 'auto', margin: '0 auto 24px' }}
             />
             <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '8px', color: '#222428' }}>
               Create an account
@@ -184,22 +183,43 @@ const Register: React.FC = () => {
                 <IonLabel style={{ fontSize: '14px', fontWeight: '500', marginBottom: '8px', display: 'block' }}>
                   Password
                 </IonLabel>
-                <IonInput
-                  type="password"
-                  placeholder="At least 6 characters"
-                  value={formData.password}
-                  onIonChange={(e) => setFormData({ ...formData, password: e.detail.value! })}
-                  required
-                  disabled={loading}
-                  style={{ 
-                    '--background': '#ffffff',
-                    '--border-color': '#e5e7eb',
-                    '--border-width': '1px',
-                    '--border-radius': '8px',
-                    '--padding-start': '12px',
-                    '--padding-end': '12px'
-                  }}
-                />
+                <div style={{ position: 'relative' }}>
+                  <IonInput
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="At least 6 characters"
+                    value={formData.password}
+                    onIonChange={(e) => setFormData({ ...formData, password: e.detail.value! })}
+                    required
+                    disabled={loading}
+                    style={{ 
+                      '--background': '#ffffff',
+                      '--border-color': '#e5e7eb',
+                      '--border-width': '1px',
+                      '--border-radius': '8px',
+                      '--padding-start': '12px',
+                      '--padding-end': '42px'
+                    }}
+                  />
+                  <IonButton
+                    fill="clear"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '0',
+                      top: '0',
+                      height: '100%',
+                      margin: 0,
+                      '--padding-start': '8px',
+                      '--padding-end': '8px'
+                    }}
+                  >
+                    <IonIcon 
+                      slot="icon-only" 
+                      icon={showPassword ? eyeOffOutline : eyeOutline} 
+                      style={{ color: '#666' }}
+                    />
+                  </IonButton>
+                </div>
               </div>
 
               {/* Confirm Password */}
@@ -207,22 +227,43 @@ const Register: React.FC = () => {
                 <IonLabel style={{ fontSize: '14px', fontWeight: '500', marginBottom: '8px', display: 'block' }}>
                   Confirm Password
                 </IonLabel>
-                <IonInput
-                  type="password"
-                  placeholder="Re-enter password"
-                  value={formData.confirmPassword}
-                  onIonChange={(e) => setFormData({ ...formData, confirmPassword: e.detail.value! })}
-                  required
-                  disabled={loading}
-                  style={{ 
-                    '--background': '#ffffff',
-                    '--border-color': '#e5e7eb',
-                    '--border-width': '1px',
-                    '--border-radius': '8px',
-                    '--padding-start': '12px',
-                    '--padding-end': '12px'
-                  }}
-                />
+                <div style={{ position: 'relative' }}>
+                  <IonInput
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    placeholder="Re-enter password"
+                    value={formData.confirmPassword}
+                    onIonChange={(e) => setFormData({ ...formData, confirmPassword: e.detail.value! })}
+                    required
+                    disabled={loading}
+                    style={{ 
+                      '--background': '#ffffff',
+                      '--border-color': '#e5e7eb',
+                      '--border-width': '1px',
+                      '--border-radius': '8px',
+                      '--padding-start': '12px',
+                      '--padding-end': '42px'
+                    }}
+                  />
+                  <IonButton
+                    fill="clear"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '0',
+                      top: '0',
+                      height: '100%',
+                      margin: 0,
+                      '--padding-start': '8px',
+                      '--padding-end': '8px'
+                    }}
+                  >
+                    <IonIcon 
+                      slot="icon-only" 
+                      icon={showConfirmPassword ? eyeOffOutline : eyeOutline} 
+                      style={{ color: '#666' }}
+                    />
+                  </IonButton>
+                </div>
               </div>
 
               <IonButton 

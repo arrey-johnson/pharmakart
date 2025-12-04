@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'mobile-ionic',
+  appId: 'com.pharmakart.app',
+  appName: 'PharmaKart',
   webDir: 'dist'
 };
 

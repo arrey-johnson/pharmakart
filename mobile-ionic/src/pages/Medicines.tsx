@@ -20,10 +20,11 @@ import {
   IonButtons,
   IonBackButton,
 } from '@ionic/react';
-import { cartOutline, addOutline } from 'ionicons/icons';
+import { cartOutline, addOutline, notificationsOutline, personOutline } from 'ionicons/icons';
 import { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import medicineService, { Medicine } from '../services/medicine.service';
-import cartService from '../services/cart.service';
+import { formatPrice } from '../config/constants';
 
 const categories = [
   { name: 'All', slug: 'all' },
@@ -41,6 +42,7 @@ const Medicines: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [loading, setLoading] = useState(true);
   const [present] = useIonToast();
+  const history = useHistory();
 
   useEffect(() => {
     fetchMedicines();
@@ -84,38 +86,20 @@ const Medicines: React.FC = () => {
     setFilteredMedicines(filtered);
   };
 
-  const handleAddToCart = async (medicine: Medicine) => {
-    try {
-      await cartService.addToCart(medicine.id, 1);
-      present({
-        message: `${medicine.name} added to cart`,
-        duration: 2000,
-        color: 'success',
-      });
-    } catch (error) {
-      present({
-        message: 'Failed to add to cart',
-        duration: 2000,
-        color: 'danger',
-      });
-    }
-  };
-
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar color="primary">
-          <IonButtons slot="start">
-            <IonBackButton defaultHref="/home" />
-          </IonButtons>
-          <IonTitle>Browse Medicines</IonTitle>
+        <IonToolbar style={{ '--background': 'white' }}>
           <IonButtons slot="end">
-            <IonButton routerLink="/cart">
-              <IonIcon slot="icon-only" icon={cartOutline} />
+            <IonButton routerLink="/app/cart">
+              <IonIcon slot="icon-only" icon={cartOutline} style={{ color: '#008C8C', fontSize: '24px' }} />
+            </IonButton>
+            <IonButton>
+              <IonIcon slot="icon-only" icon={notificationsOutline} style={{ color: '#008C8C', fontSize: '24px' }} />
             </IonButton>
           </IonButtons>
         </IonToolbar>
-        <IonToolbar>
+        <IonToolbar style={{ '--background': 'white' }}>
           <IonSearchbar
             value={searchText}
             onIonInput={(e) => setSearchText(e.detail.value!)}
@@ -148,38 +132,51 @@ const Medicines: React.FC = () => {
           <IonGrid>
             <IonRow>
               {filteredMedicines.map(medicine => (
-                <IonCol size="12" sizeMd="6" sizeLg="4" key={medicine.id}>
-                  <IonCard>
+                <IonCol size="6" sizeMd="4" sizeLg="3" key={medicine.id}>
+                  <IonCard 
+                    button 
+                    onClick={() => history.push(`/app/medicines/${medicine.id}`)}
+                    style={{ margin: 0 }}
+                  >
                     {medicine.image_url && (
                       <img 
                         src={medicine.image_url} 
                         alt={medicine.name}
-                        style={{ height: '200px', objectFit: 'cover' }}
+                        style={{ width: '100%', height: '160px', objectFit: 'cover' }}
                       />
                     )}
-                    <IonCardHeader>
-                      <IonCardTitle>{medicine.name}</IonCardTitle>
-                    </IonCardHeader>
-                    <IonCardContent>
-                      <p style={{ fontSize: '14px', color: '#666', marginBottom: '12px' }}>
-                        {medicine.description}
+                    <IonCardContent style={{ padding: '12px' }}>
+                      <h3 style={{ 
+                        fontSize: '15px', 
+                        fontWeight: 'bold', 
+                        margin: '0 0 6px',
+                        lineHeight: '1.3',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical'
+                      }}>
+                        {medicine.name}
+                      </h3>
+                      <p style={{ 
+                        fontSize: '12px', 
+                        color: '#666', 
+                        margin: '0 0 8px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {medicine.genericName || medicine.description}
                       </p>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#008C8C' }}>
-                          ${medicine.price}
-                        </span>
-                        <IonButton
-                          size="small"
-                          onClick={() => handleAddToCart(medicine)}
-                          disabled={medicine.quantity === 0}
-                        >
-                          <IonIcon slot="start" icon={addOutline} />
-                          Add to Cart
-                        </IonButton>
-                      </div>
-                      {medicine.quantity === 0 && (
-                        <p style={{ color: 'red', fontSize: '12px', marginTop: '8px' }}>
-                          Out of stock
+                      {medicine.pharmacyCount && medicine.pharmacyCount > 0 && (
+                        <p style={{ fontSize: '13px', color: '#008C8C', fontWeight: '500', margin: 0 }}>
+                          Available at {medicine.pharmacyCount} {medicine.pharmacyCount === 1 ? 'pharmacy' : 'pharmacies'}
+                        </p>
+                      )}
+                      {medicine.minPrice && (
+                        <p style={{ fontSize: '12px', color: '#666', margin: '4px 0 0' }}>
+                          From {formatPrice(medicine.minPrice)}
                         </p>
                       )}
                     </IonCardContent>

@@ -9,6 +9,7 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonButton,
+  IonButtons,
   IonIcon,
   IonBadge,
   IonGrid,
@@ -17,17 +18,22 @@ import {
   IonSpinner,
 } from '@ionic/react';
 import { 
-  medkitOutline, 
-  receiptOutline, 
+  cubeOutline,           // Package icon from web
+  timeOutline,           // Clock icon from web  
+  cashOutline,           // DollarSign icon from web
+  trendingUpOutline,     // TrendingUp icon from web (same)
+  medicalOutline,        // Pill icon from web
+  logOutOutline,         // LogOut icon from web (same)
+  notificationsOutline,  // Notification bell
+  personOutline,         // Profile icon
   addCircleOutline,
-  trendingUpOutline,
-  logOutOutline 
 } from 'ionicons/icons';
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import authService from '../services/auth.service';
 import orderService from '../services/order.service';
 import medicineService from '../services/medicine.service';
+import { formatPrice } from '../config/constants';
 
 const PharmacyDashboard: React.FC = () => {
   const [stats, setStats] = useState({
@@ -80,11 +86,12 @@ const PharmacyDashboard: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar color="primary">
-          <IonTitle>Pharmacy Dashboard</IonTitle>
-          <IonButton slot="end" fill="clear" onClick={handleLogout}>
-            <IonIcon slot="icon-only" icon={logOutOutline} />
-          </IonButton>
+        <IonToolbar style={{ '--background': 'white' }}>
+          <IonButtons slot="end">
+            <IonButton>
+              <IonIcon slot="icon-only" icon={notificationsOutline} style={{ color: '#008C8C', fontSize: '24px' }} />
+            </IonButton>
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
 
@@ -107,7 +114,8 @@ const PharmacyDashboard: React.FC = () => {
                   <IonCard style={{ background: '#f0fafa' }}>
                     <IonCardContent>
                       <div style={{ textAlign: 'center' }}>
-                        <IonIcon icon={receiptOutline} style={{ fontSize: '32px', color: '#008C8C' }} />
+                        {/* Package icon - matches web */}
+                        <IonIcon icon={cubeOutline} style={{ fontSize: '32px', color: '#008C8C' }} />
                         <h3 style={{ fontSize: '24px', fontWeight: 'bold', margin: '8px 0' }}>
                           {stats.totalOrders}
                         </h3>
@@ -120,7 +128,8 @@ const PharmacyDashboard: React.FC = () => {
                   <IonCard style={{ background: '#fff4e6' }}>
                     <IonCardContent>
                       <div style={{ textAlign: 'center' }}>
-                        <IonIcon icon={trendingUpOutline} style={{ fontSize: '32px', color: '#f59e0b' }} />
+                        {/* Clock icon - matches web */}
+                        <IonIcon icon={timeOutline} style={{ fontSize: '32px', color: '#ea580c' }} />
                         <h3 style={{ fontSize: '24px', fontWeight: 'bold', margin: '8px 0' }}>
                           {stats.pendingOrders}
                         </h3>
@@ -133,7 +142,8 @@ const PharmacyDashboard: React.FC = () => {
                   <IonCard style={{ background: '#f0f9ff' }}>
                     <IonCardContent>
                       <div style={{ textAlign: 'center' }}>
-                        <IonIcon icon={medkitOutline} style={{ fontSize: '32px', color: '#3b82f6' }} />
+                        {/* Pill icon - matches web */}
+                        <IonIcon icon={medicalOutline} style={{ fontSize: '32px', color: '#3b82f6' }} />
                         <h3 style={{ fontSize: '24px', fontWeight: 'bold', margin: '8px 0' }}>
                           {stats.totalMedicines}
                         </h3>
@@ -146,9 +156,10 @@ const PharmacyDashboard: React.FC = () => {
                   <IonCard style={{ background: '#f0fdf4' }}>
                     <IonCardContent>
                       <div style={{ textAlign: 'center' }}>
-                        <span style={{ fontSize: '32px' }}>💰</span>
-                        <h3 style={{ fontSize: '24px', fontWeight: 'bold', margin: '8px 0' }}>
-                          ${stats.revenue.toFixed(0)}
+                        {/* DollarSign icon - matches web */}
+                        <IonIcon icon={cashOutline} style={{ fontSize: '32px', color: '#16a34a' }} />
+                        <h3 style={{ fontSize: '20px', fontWeight: 'bold', margin: '8px 0' }}>
+                          {formatPrice(stats.revenue)}
                         </h3>
                         <p style={{ fontSize: '12px', color: '#666' }}>Revenue</p>
                       </div>
@@ -162,50 +173,53 @@ const PharmacyDashboard: React.FC = () => {
             <div style={{ marginTop: '24px' }}>
               <h3 style={{ marginBottom: '16px' }}>Quick Actions</h3>
               
-              <IonCard button routerLink="/pharmacy/inventory">
-                <IonCardContent>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <IonIcon icon={medkitOutline} style={{ fontSize: '28px', color: '#008C8C' }} />
-                    <div>
-                      <h4 style={{ margin: 0, fontWeight: 'bold' }}>Manage Inventory</h4>
-                      <p style={{ margin: '4px 0 0', fontSize: '14px', color: '#666' }}>
-                        Add, edit, or remove medicines
-                      </p>
-                    </div>
-                  </div>
-                </IonCardContent>
-              </IonCard>
+          <IonCard button routerLink="/pharmacy/inventory">
+            <IonCardContent>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                {/* Pill icon - matches web */}
+                <IonIcon icon={medicalOutline} style={{ fontSize: '28px', color: '#008C8C' }} />
+                <div>
+                  <h4 style={{ margin: 0, fontWeight: 'bold' }}>Manage Inventory</h4>
+                  <p style={{ margin: '4px 0 0', fontSize: '14px', color: '#666' }}>
+                    Add, edit, or remove medicines
+                  </p>
+                </div>
+              </div>
+            </IonCardContent>
+          </IonCard>
 
-              <IonCard button routerLink="/pharmacy/add-medicine">
-                <IonCardContent>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <IonIcon icon={addCircleOutline} style={{ fontSize: '28px', color: '#008C8C' }} />
-                    <div>
-                      <h4 style={{ margin: 0, fontWeight: 'bold' }}>Add New Medicine</h4>
-                      <p style={{ margin: '4px 0 0', fontSize: '14px', color: '#666' }}>
-                        List a new product in your inventory
-                      </p>
-                    </div>
-                  </div>
-                </IonCardContent>
-              </IonCard>
+          <IonCard button routerLink="/pharmacy/add-medicine">
+            <IonCardContent>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                {/* Add icon */}
+                <IonIcon icon={addCircleOutline} style={{ fontSize: '28px', color: '#008C8C' }} />
+                <div>
+                  <h4 style={{ margin: 0, fontWeight: 'bold' }}>Add New Medicine</h4>
+                  <p style={{ margin: '4px 0 0', fontSize: '14px', color: '#666' }}>
+                    List a new product in your inventory
+                  </p>
+                </div>
+              </div>
+            </IonCardContent>
+          </IonCard>
 
-              <IonCard button routerLink="/pharmacy/orders">
-                <IonCardContent>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <IonIcon icon={receiptOutline} style={{ fontSize: '28px', color: '#008C8C' }} />
-                    <div style={{ flex: 1 }}>
-                      <h4 style={{ margin: 0, fontWeight: 'bold' }}>View Orders</h4>
-                      <p style={{ margin: '4px 0 0', fontSize: '14px', color: '#666' }}>
-                        Manage incoming orders
-                      </p>
-                    </div>
-                    {stats.pendingOrders > 0 && (
-                      <IonBadge color="warning">{stats.pendingOrders}</IonBadge>
-                    )}
-                  </div>
-                </IonCardContent>
-              </IonCard>
+          <IonCard button routerLink="/pharmacy/orders">
+            <IonCardContent>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                {/* Package icon - matches web */}
+                <IonIcon icon={cubeOutline} style={{ fontSize: '28px', color: '#008C8C' }} />
+                <div style={{ flex: 1 }}>
+                  <h4 style={{ margin: 0, fontWeight: 'bold' }}>View Orders</h4>
+                  <p style={{ margin: '4px 0 0', fontSize: '14px', color: '#666' }}>
+                    Manage incoming orders
+                  </p>
+                </div>
+                {stats.pendingOrders > 0 && (
+                  <IonBadge color="warning">{stats.pendingOrders}</IonBadge>
+                )}
+              </div>
+            </IonCardContent>
+          </IonCard>
             </div>
           </>
         )}

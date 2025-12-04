@@ -7,31 +7,77 @@ import {
   IonCard,
   IonCardContent,
   IonButton,
+  IonButtons,
   IonIcon,
   IonBadge,
   IonGrid,
   IonRow,
   IonCol,
+  IonSpinner,
 } from '@ionic/react';
-import { bicycleOutline, checkmarkCircleOutline, timeOutline, logOutOutline } from 'ionicons/icons';
+import { 
+  bicycleOutline,         // Bike icon from web (same)
+  checkmarkCircleOutline, // CheckCircle icon from web (same)
+  timeOutline,            // Clock icon from web (same)
+  cashOutline,            // DollarSign icon from web
+  navigateOutline,        // Navigation icon from web
+  cubeOutline,            // Package icon from web
+  notificationsOutline,   // Notification bell
+  personOutline,          // Profile icon
+  logOutOutline           // LogOut icon from web (same)
+} from 'ionicons/icons';
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import authService from '../services/auth.service';
+import deliveryService from '../services/delivery.service';
+import { formatPrice } from '../config/constants';
 
 const RiderDashboard: React.FC = () => {
   const [user, setUser] = useState<any>(null);
-  const [stats] = useState({
-    totalDeliveries: 24,
-    completedToday: 8,
-    inProgress: 3,
-    earnings: 12500,
+  const [stats, setStats] = useState({
+    totalDeliveries: 0,
+    completedToday: 0,
+    inProgress: 0,
+    earnings: 0,
   });
+  const [loading, setLoading] = useState(true);
   const history = useHistory();
 
   useEffect(() => {
     const currentUser = authService.getCurrentUser();
     setUser(currentUser);
+    if (currentUser?.id) {
+      fetchDeliveryStats(currentUser.id);
+    }
   }, []);
+
+  const fetchDeliveryStats = async (riderId: string) => {
+    try {
+      const [deliveries, earningsData] = await Promise.all([
+        deliveryService.getAll(riderId),
+        deliveryService.getEarnings()
+      ]);
+
+      const now = new Date();
+      const today = now.toISOString().split('T')[0];
+
+      setStats({
+        totalDeliveries: deliveries.length,
+        completedToday: deliveries.filter(d => 
+          d.status === 'DELIVERED' && 
+          d.createdAt.startsWith(today)
+        ).length,
+        inProgress: deliveries.filter(d => 
+          ['ASSIGNED', 'PICKED_UP'].includes(d.status)
+        ).length,
+        earnings: earningsData.total || 0,
+      });
+    } catch (error) {
+      console.error('Failed to fetch delivery stats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = () => {
     authService.logout();
@@ -41,11 +87,12 @@ const RiderDashboard: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar color="primary">
-          <IonTitle>Rider Dashboard</IonTitle>
-          <IonButton slot="end" fill="clear" onClick={handleLogout}>
-            <IonIcon slot="icon-only" icon={logOutOutline} />
-          </IonButton>
+        <IonToolbar style={{ '--background': 'white' }}>
+          <IonButtons slot="end">
+            <IonButton>
+              <IonIcon slot="icon-only" icon={notificationsOutline} style={{ color: '#008C8C', fontSize: '24px' }} />
+            </IonButton>
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
 
@@ -102,8 +149,8 @@ const RiderDashboard: React.FC = () => {
                 <IonCardContent>
                   <div style={{ textAlign: 'center' }}>
                     <span style={{ fontSize: '32px' }}>💰</span>
-                    <h3 style={{ fontSize: '24px', fontWeight: 'bold', margin: '8px 0' }}>
-                      ${stats.earnings}
+                    <h3 style={{ fontSize: '20px', fontWeight: 'bold', margin: '8px 0' }}>
+                      {formatPrice(stats.earnings)}
                     </h3>
                     <p style={{ fontSize: '12px', color: '#666' }}>Earnings</p>
                   </div>
